@@ -17,16 +17,7 @@ import matplotlib as plt
 from shapely.geometry import Polygon, Point
 import matplotlib.pyplot as plt
 
-
-
-
-
-
-
 # Algorithm
-
-
-
 # Manually segment masks for left and right T2
 # Save them in a single folder with the {subject name}_left.nii and {subject_name}_right.nii
 # Load each mask and calculate center coordinates
@@ -57,8 +48,6 @@ import matplotlib.pyplot as plt
                 #Left
                 #Right
 
-
-
 # 1 for analyzing/splitting the tracts of interest. This folder contains:
         # Left and right subfolders
             # Subject name subfolders
@@ -81,11 +70,6 @@ import matplotlib.pyplot as plt
 # NOTE: My coordinates depend on slices (image coordinates).
 # ExploreDTI uses as an input voxel coordinates (so multiplying by voxel resolution).
 
-
-
-                                                      
-
-        
 def hexagon_corners_from_center(x0, y0, distance, z_values):
     angles = np.linspace(0, 2*np.pi, 7)[:-1]  #angles in radians
     corners = []
@@ -100,10 +84,6 @@ def hexagon_corners_from_center(x0, y0, distance, z_values):
             corners.append(corner)
 
     return np.array(corners)
-
-
-
-
 
 
 def all_integer_points_inside_hexagon(center_coordinates, distance, z_value):
@@ -122,14 +102,9 @@ def all_integer_points_inside_hexagon(center_coordinates, distance, z_value):
                 all_points.append((x_int, y_int, z_value))
     
     return np.array(all_points)
-        
-
-
-
 
 # insert y0, z0, y1 
 # top/bottom, right/left are defined based on visualization in ITKSnap
-
 def rectangle_corners_from_center(x0, y0, z0, y1, z1):
            
             # Calculate coordinates of the four corners of the rectangular
@@ -139,22 +114,15 @@ def rectangle_corners_from_center(x0, y0, z0, y1, z1):
             bottom_left = (round(x0, 4),  y1, z0)
             
             return top_left, top_right, bottom_right, bottom_left
-            
-   
-            
-            
+
+
 # just define corners and distance
 # for every point just iterate z = [z0, z0+8]
 # y from y0 to y1 +1
-# that's all :)            
-         
-        
+# that's all :)                    
 def all_integer_points_inside_rectangle(x0, y0, z0, y1, z1):
-    
-    
     # Initialize a list to store all integer points inside the rectangle
     all_points = []
-
     # Iterate over all potential integer coordinates inside the rectangle
     # and satisfy the condition ∣y−y0∣≤ ymax and ∣z−z0∣≤ zmax
     for y_int in range(int(y0), y1 + 1):
@@ -167,26 +135,19 @@ def all_integer_points_inside_rectangle(x0, y0, z0, y1, z1):
                 all_points.append((x0, y_int, z_int))
             
     return np.array(all_points)
-
-
-
-
+    
 # a simple function to create a rectangular ROI and save all points inside
 #top/bottom, right/left are defined based on visualization in ITKSnap in x plane
-
-
 def rectangular_AND_ROI_segm(x0, ymin, ymax, zmin, zmax):
     
     top_left = (x0, ymax ,zmax)
     top_right = (x0,  ymin, zmax)
     bottom_right = (x0, ymin, zmin)
-    bottom_left = (x0,  ymax, zmin)
-    
+    bottom_left = (x0,  ymax, zmin)    
     
     return top_left, top_right, bottom_right, bottom_left
 
-  
-    
+
 def points_inside_AND_ROI_segm(x0, ymin, ymax, zmin, zmax):
     
     all_points = []
@@ -204,13 +165,10 @@ def points_inside_AND_ROI_segm(x0, ymin, ymax, zmin, zmax):
              
     return np.array(all_points)
     
-
-
 # helper function to calculate mean of masks
 def calculate_roi_center(roi):    
     center = np.mean(np.argwhere(roi), axis=0)
     return center
-
 
 
 # two big directories will be created.
@@ -219,10 +177,6 @@ def calculate_roi_center(roi):
 # then the splitted tracts will be saved in the segmentation folder in subfolders for each patient
 # the tracts will be segmented and stored in a single folder named after each subject 
 # Then statistics will be applied
-
-
-
-
 def process_masks_to_ROI(masks_path, left_path, right_path, left_segm_path, right_segm_path):
     
     for filename in os.listdir(masks_path):
@@ -274,8 +228,6 @@ def process_masks_to_ROI(masks_path, left_path, right_path, left_segm_path, righ
             right_patient_folder = os.path.join(right_path, subject_id)
             os.makedirs(right_patient_folder, exist_ok=True)
             
-            
-            
             # For Left segmentation
             left_segm_folder = os.path.join(left_segm_path, subject_id)
             os.makedirs(left_segm_folder, exist_ok=True)
@@ -285,13 +237,8 @@ def process_masks_to_ROI(masks_path, left_path, right_path, left_segm_path, righ
             os.makedirs(right_segm_folder, exist_ok=True)
             
             
-            
-            
-            
+          
 ###########################################    Determine Hexagonal ROIs    #########################################################
-    
-    
-    
         
             # initialize center coordinates
             x0, y0 = left_roi_center[0]+1, left_roi_center[1]+1
@@ -320,11 +267,8 @@ def process_masks_to_ROI(masks_path, left_path, right_path, left_segm_path, righ
             # Then change enumeration and store them as SEED_1, SEED_2, SEED_3
             # iterate through each value but name the hROI_SEED_ 1, 2, 3, 4, 5...
             # That's easier when handling ROIs
-            # 
-            
             
             counter1 = 1
-            
             for z_value in z_values: 
                 
                 # else: distance = smaller and create spherical ROI
@@ -389,8 +333,7 @@ def process_masks_to_ROI(masks_path, left_path, right_path, left_segm_path, righ
     
 #######################################       Determine rectangular ROIs        ####################################################
             
-    
-    
+
             # Define y0 and y1. how wide the AND ROI?
             # define z0. the max z is defined inside the helper funciton 
             y1_AND = int(np.max(hexagon_corners_array_left[:,1])+3) #2 voxels above the cochlea ROI (+1 because we are numpy!!)
@@ -425,10 +368,6 @@ def process_masks_to_ROI(masks_path, left_path, right_path, left_segm_path, righ
             
             
             
-            
-            
-            
-            
             y1_AND = int(np.max(hexagon_corners_array_right[:,1])+3) #2 voxels above the cochlea ROI (+1 because we are numpy!!)
             y0_AND = int(np.min(hexagon_corners_array_right[:,1])-5) # 4 voxels below the cochlea ROI (+1 because numpy!!)
             z0_AND = int(np.min(hexagon_corners_array_right[:,2])-3) #2 slices below the cochlea
@@ -458,19 +397,9 @@ def process_masks_to_ROI(masks_path, left_path, right_path, left_segm_path, righ
             np.savetxt(os.path.join(right_segm_folder, r'hROI_AND_1.txt'), rectangle_corners_array_right, fmt='%.4f' ) 
             np.savetxt(os.path.join(right_segm_folder, r'ROI_AND_1.txt'), all_points_inside_array_right_mid.astype(int), fmt='%d')
             
-            
-            
-            
-            
-            
-            
-     
-        
+                
         
     ##############################  create AND roi for segmentation  for left and right cochlea    ###################
-        
-    
-    
             x0_left = left_roi_center[0] + 1 # define the AND segmentation ROI based on the center of the cochlea 
             ymin = int(np.min(hexagon_corners_array_left[:,1])+1)  #find the down boundary of hexagonal roi (but as an integer)
             ymax = int(np.max(hexagon_corners_array_left[:, 1])+1)  
@@ -483,10 +412,7 @@ def process_masks_to_ROI(masks_path, left_path, right_path, left_segm_path, righ
             # Save segmetation ROI
             np.savetxt(os.path.join(left_segm_folder, r'hROI_AND_2.txt'), segm_ROI_array_left, fmt='%.4f' )      
             np.savetxt(os.path.join(left_segm_folder, r'ROI_AND_2.txt'), points_inside_AND_left.astype(int), fmt='%d')   
-             
-                       
-                
-            
+              
             x0_right = right_roi_center[0] + 1
             ymin = int(np.min(hexagon_corners_array_right[:,1])+1)  #find the down boundary of hexagonal roi (but as an integer)
             ymax = int(np.max(hexagon_corners_array_right[:,1])+1) 
@@ -496,16 +422,13 @@ def process_masks_to_ROI(masks_path, left_path, right_path, left_segm_path, righ
             points_inside_AND_right = np.array(points_inside_AND_ROI_segm(x0_right, ymin, ymax, zmin_right, zmax_right))
                 
                 
-        
             # Save segmetation ROI
             np.savetxt(os.path.join(right_segm_folder, r'hROI_AND_2.txt'), segm_ROI_array_right, fmt='%.4f' )    
             np.savetxt(os.path.join(right_segm_folder, r'ROI_AND_2.txt'), points_inside_AND_right.astype(int), fmt='%d')
             
             
             print(f"Processing for subject {subject_id} done!")
-
-
-            
+     
       
         
 if __name__ == "__main__":        
@@ -513,18 +436,16 @@ if __name__ == "__main__":
         # Run script
         # Specify the path of the manual segmented masks
         # Specify the path to store left and right SEED and AND coordinates
-        # Specify the path to store left and right AND coordinates for segmentation
-        
+        # Specify the path to store left and right AND coordinates for segmentation 
         masks_path = r"H:\Marc_Pastur_pipeline\DTI_MODEL\Masks"
         left_path = r"H:\Marc_Pastur_pipeline\DTI_MODEL\ROI_generation\Tract_analysis\Left"
         right_path= r"H:\Marc_Pastur_pipeline\DTI_MODEL\ROI_generation\Tract_analysis\Right"
-
         left_segm_path = r"H:\Marc_Pastur_pipeline\DTI_MODEL\ROI_generation\Segmentation\Left"
-        right_segm_path = r"H:\Marc_Pastur_pipeline\DTI_MODEL\ROI_generation\Segmentation\Right"
-        
+        right_segm_path = r"H:\Marc_Pastur_pipeline\DTI_MODEL\ROI_generation\Segmentation\Right"  
         process_masks_to_ROI(masks_path, left_path, right_path, left_segm_path, right_segm_path)
         
         
+
 
 
 
