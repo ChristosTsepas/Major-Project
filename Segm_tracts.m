@@ -1,3 +1,4 @@
+% MATLAB script to segment tracts based on the ExploreDTI functionality and GUI
 
 %input_path = 'H:\Marc_Pastur_pipeline\DTI_MODEL\ROI_generation\Segmentation\Left';
 input_path = 'H:\Marc_Pastur_pipeline\DTI_MODEL\ROI_generation\Segmentation\Right';
@@ -57,4 +58,5 @@ fileID = fopen(output_file, 'w');
 for i = 1:length(no_tract_subjects)
     fprintf(fileID, '%s\n', no_tract_subjects{i});
 end
+
 fclose(fileID);
