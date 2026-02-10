@@ -4,20 +4,15 @@ Created on Thu Feb 29 11:36:35 2024
 
 @author: ctsepas
 """
-
-#### Here the whole processing done in Python will be presented as a single script ###################
-
 import os
 from Cochlea_ROI import process_masks_to_ROI
 from Automated_normalization import process_directory
 from Denoising import denoising
 from Automated_masking import mask_all_nii_files
 from T2_processing import process_and_crop_T2, check_correct_negative_values
-#from other_scripts import functions # fill in any missing scripts
+ 
+# Script to call all necessary functions for processing and analysis of dMRI data
 
-# I could use matlab engine and load matlab funcitons in a .py script and run it from this "GUI" script
-# but it would be complicated due to different languages, APIs, data structures etc. Better to keep it seperated.....(for now)   
-    
 if __name__ == "__main__":
     
     step = input("Please type which processing step you want to do. Options are: \n 1) Denoising \n 2) Normalization \n 3) Masking \n 4) Crop or correct for negatives values \n 5) Other step \n Type 'Generate ROIs' if you want to creat Cochlea Rois for further analysis. \n ")
@@ -70,3 +65,4 @@ if __name__ == "__main__":
         print("Wrong input. Please type a preprocessing step that you want to do.")
 
         
+
