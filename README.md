@@ -11,4 +11,5 @@ The pipeline operates on a diffusion MRI 4D data and T2 weighted images. The use
 
 - Preprocessing steps include denoising, signal drift correction, eddy current correction, normalization, cropping and masking.
 - Tractogrpahy analysis including ROI creation based on cochlae masks, analysis and segmentation of the tracts.
+
 Part of the preprocessing steps are being done in MATLAB by loading the backend fucntions of ExploreDTI toolbox.
